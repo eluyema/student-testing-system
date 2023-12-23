@@ -8,9 +8,9 @@ namespace student_testing_system.Services
     public interface IUserService
     {
         Task<IEnumerable<User>> GetAllUsersAsync();
-        Task<UserDTO> GetUserByIdAsync(Guid id);
+        Task<UserDTO> GetUserByIdAsync(string id);
         Task<UserDTO> CreateUserAsync(CreateUserDTO user);
-        Task UpdateUserAsync(Guid id, UpdateUserDTO updateUserDTO);
-        Task DeleteUserAsync(Guid id);
+        Task UpdateUserAsync(string id, UpdateUserDTO updateUserDTO);
+        Task DeleteUserAsync(string id);
     }
 }

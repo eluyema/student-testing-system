@@ -1,14 +1,20 @@
-﻿using student_testing_system.Models.Users;
+﻿using Microsoft.AspNetCore.Identity;
+using student_testing_system.Models.Users;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace student_testing_system.Services.Users
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly UserManager<User> _userManager; 
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, UserManager<User> userManager)
         {
             _userRepository = userRepository;
+            _userManager = userManager;
         }
 
         public async Task<IEnumerable<User>> GetAllUsersAsync()
@@ -16,33 +22,61 @@ namespace student_testing_system.Services.Users
             return await _userRepository.GetAllUsersAsync();
         }
 
-        public async Task<UserDTO> GetUserByIdAsync(Guid id)
+        public async Task<UserDTO> GetUserByIdAsync(string id)
         {
-            var dbUser = await _userRepository.GetUserByIdAsync(id);
-            return new UserDTO { Id = dbUser.Id, Name = dbUser.Name };
+            var user = await _userManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                return new UserDTO { Id = user.Id, UserName = user.UserName };
+            }
+            else
+            {
+                throw new KeyNotFoundException("User not found.");
+            }
         }
 
         public async Task<UserDTO> CreateUserAsync(CreateUserDTO createUserDTO)
         {
-            var user = new User { Name = createUserDTO.Name };
-            var createdUser = await _userRepository.CreateUserAsync(user);
-            return new UserDTO { Id = createdUser.Id, Name = createdUser.Name };
-        }
+            var user = new User { UserName = createUserDTO.UserName };
+            var result = await _userManager.CreateAsync(user, createUserDTO.Password); 
 
-        public async Task UpdateUserAsync(Guid id, UpdateUserDTO updateUserDTO)
-        {
-            var user = await _userRepository.GetUserByIdAsync(id);
-            if (user == null)
+            if (result.Succeeded)
             {
-                throw new KeyNotFoundException("User not found");
+                return new UserDTO { Id = user.Id, UserName = user.UserName };
             }
-            user.Name = updateUserDTO.Name;
-            await _userRepository.UpdateUserAsync(user);
+            else
+            {
+                throw new Exception("User creation failed.");
+            }
         }
 
-        public async Task DeleteUserAsync(Guid id)
+        public async Task UpdateUserAsync(string id, UpdateUserDTO updateUserDTO)
         {
-            await _userRepository.DeleteUserAsync(id);
+            var userIdAsString = id.ToString();
+            var user = await _userManager.FindByIdAsync(userIdAsString);
+            if (user != null)
+            {
+                user.UserName = updateUserDTO.UserName;
+                await _userManager.UpdateAsync(user);
+            }
+            else
+            {
+                throw new KeyNotFoundException("User not found.");
+            }
+        }
+
+        public async Task DeleteUserAsync(string id)
+        {
+            var userIdAsString = id.ToString();
+            var user = await _userManager.FindByIdAsync(userIdAsString);
+            if (user != null)
+            {
+                await _userManager.DeleteAsync(user);
+            }
+            else
+            {
+                throw new KeyNotFoundException("User not found.");
+            }
         }
     }
 }

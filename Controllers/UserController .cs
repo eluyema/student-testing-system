@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using student_testing_system.Models.Users;
 using student_testing_system.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace student_testing_system.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize(Roles = "Student")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -23,7 +25,7 @@ namespace student_testing_system.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUser(Guid id)
+        public async Task<IActionResult> GetUser(string id)
         {
             var user = await _userService.GetUserByIdAsync(id);
             if (user == null)
@@ -41,14 +43,14 @@ namespace student_testing_system.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UpdateUserDTO updateUserDTO)
+        public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserDTO updateUserDTO)
         {
             await _userService.UpdateUserAsync(id, updateUserDTO);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(Guid id)
+        public async Task<IActionResult> DeleteUser(string id)
         {
             await _userService.DeleteUserAsync(id);
             return NoContent();
