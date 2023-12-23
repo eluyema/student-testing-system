@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using student_testing_system.Data;
 using student_testing_system.Models.Users;
+using student_testing_system.Services.Users;
+using student_testing_system.Services;
 
 class Program
 {
@@ -32,6 +34,7 @@ class Program
         )
     );
         builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<IUserService, UserService>();
     }
 
     private static void ConfigureApp(WebApplication app)
