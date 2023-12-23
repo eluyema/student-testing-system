@@ -9,5 +9,8 @@ namespace student_testing_system.Models.Users
         [Required]
         [StringLength(100, ErrorMessage = "Full name length can't be more than 100 characters.")]
         public string FullName { get; set; }
+
+        public string RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpiryTime { get; set; }
     }
 }

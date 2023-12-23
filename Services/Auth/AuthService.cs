@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using student_testing_system.Models.Users;
 using student_testing_system.Services.Auth.DTOs;
 using student_testing_system.Services.Jwt;
@@ -9,13 +10,13 @@ namespace student_testing_system.Services.Auth
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
-        private readonly JwtService _jwtService;
+        private readonly TokensService _tokensService;
 
-        public AuthService(UserManager<User> userManager, SignInManager<User> signInManager, JwtService jwtService)
+        public AuthService(UserManager<User> userManager, SignInManager<User> signInManager, TokensService tokensService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _jwtService = jwtService;
+            _tokensService = tokensService;
         }
 
         public async Task<IdentityResult> RegisterUserAsync(RegisterDTO model)
@@ -29,32 +30,65 @@ namespace student_testing_system.Services.Auth
 
             var result = await _userManager.CreateAsync(user, model.Password);
 
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
-                await _userManager.AddToRoleAsync(user, "Student");
+                throw new InvalidOperationException("Failed to create new user.");
             }
 
+            await _userManager.AddToRoleAsync(user, "Student");
             return result;
         }
 
 
-        public async Task<LoginResponseDTO> LoginUserAsync(LoginDTO model)
+        public async Task<TokenResponseDTO> LoginUserAsync(LoginDTO model)
         {
-            var response = new LoginResponseDTO
-            {
-                SignInResult = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: false, lockoutOnFailure: false)
-            };
+            var signInResult = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: false, lockoutOnFailure: false);
 
-            if (response.SignInResult.Succeeded)
+            if (!signInResult.Succeeded)
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
-                if (user != null)
-                {
-                    response.Token = await _jwtService.GenerateTokenAsync(user);
-                }
+                throw new UnauthorizedAccessException("Username or password is incorrect.");
             }
 
-            return response;
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user != null)
+            {
+                string token = await _tokensService.GenerateTokenAsync(user);
+                string refreshToken = _tokensService.GenerateRefreshToken();
+                user.RefreshToken = refreshToken;
+                user.RefreshTokenExpiryTime = _tokensService.GetRefreshTokenExpiryTime();
+                await _userManager.UpdateAsync(user);
+
+                return new TokenResponseDTO
+                {
+                    Token = token,
+                    RefreshToken = refreshToken
+                };
+            }
+
+            throw new UnauthorizedAccessException("User not found.");
+        }
+
+
+        public async Task<TokenResponseDTO> RefreshTokenAsync(string refreshToken)
+        {
+            var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshToken == refreshToken && u.RefreshTokenExpiryTime > DateTime.UtcNow);
+            if (user == null)
+            {
+                throw new UnauthorizedAccessException("Invalid refresh token.");
+            }
+
+            var newAccessToken = await _tokensService.GenerateTokenAsync(user);
+            var newRefreshToken = _tokensService.GenerateRefreshToken();
+
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            await _userManager.UpdateAsync(user);
+
+            return new TokenResponseDTO
+            {
+                Token = newAccessToken,
+                RefreshToken = newRefreshToken
+            };
         }
 
     }

@@ -55,7 +55,7 @@ class Program
 
     private static void ConfigureAuthentication(WebApplicationBuilder builder)
     {
-        builder.Services.AddScoped<JwtService>();
+        builder.Services.AddScoped<TokensService>();
 
         builder.Services.AddAuthentication(options =>
         {
@@ -67,7 +67,7 @@ class Program
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"])),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Auth:SecretKey"])),
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 ValidateLifetime = true,

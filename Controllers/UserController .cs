@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace student_testing_system.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/v1/user")]
     [Authorize(Roles = "Student")]
     public class UserController : ControllerBase
     {

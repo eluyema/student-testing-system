@@ -6,29 +6,31 @@ using student_testing_system.Models.Users;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace student_testing_system.Services.Jwt
 {
-    public class JwtService
+    public class TokensService
     {
-        private readonly JwtSettings _jwtSettings;
+        private readonly AuthSettings _authSettings;
         private readonly UserManager<User> _userManager;
 
-        public JwtService(IConfiguration config, UserManager<User> userManager)
+        public TokensService(IConfiguration config, UserManager<User> userManager)
         {
-            _jwtSettings = new JwtSettings
+            _authSettings = new AuthSettings
             {
-                SecretKey = config["Jwt:SecretKey"],
-                ExpiryInMinutes = int.Parse(config["Jwt:ExpiryInMinutes"])
+                SecretKey = config["Auth:SecretKey"],
+                ExpiryInMinutes = int.Parse(config["Auth:ExpiryInMinutes"]),
+                RefreshTokenExpiryInDays = int.Parse(config["Auth:RefreshTokenExpiryInDays"]),
             };
             _userManager = userManager;
         }
 
         public async Task<string> GenerateTokenAsync(User user)
         {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authSettings.SecretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var claims = new List<Claim>
@@ -47,11 +49,25 @@ namespace student_testing_system.Services.Jwt
                 issuer: null,
                 audience: null,
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(_jwtSettings.ExpiryInMinutes),
+                expires: DateTime.Now.AddMinutes(_authSettings.ExpiryInMinutes),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        public string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomNumber);
+                return Convert.ToBase64String(randomNumber);
+            }
+        }
+
+        public DateTime GetRefreshTokenExpiryTime()
+        {
+            return DateTime.UtcNow.AddDays(_authSettings.RefreshTokenExpiryInDays);
+        }
     }
 }

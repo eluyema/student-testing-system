@@ -6,7 +6,8 @@ namespace student_testing_system.Services.Auth
     public interface IAuthService
     {
         Task<IdentityResult> RegisterUserAsync(RegisterDTO registerDTO);
-        Task<LoginResponseDTO> LoginUserAsync(LoginDTO loginDTO);
+        Task<TokenResponseDTO> LoginUserAsync(LoginDTO loginDTO);
+        Task<TokenResponseDTO> RefreshTokenAsync(string refreshToken);
     }
 
 }

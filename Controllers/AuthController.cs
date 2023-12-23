@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using student_testing_system.Services.Auth;
 using student_testing_system.Services.Auth.DTOs;
+using System;
 using System.Threading.Tasks;
 
 namespace student_testing_system.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/v1/auth")]
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
@@ -46,16 +47,38 @@ namespace student_testing_system.Controllers
                 return BadRequest(ModelState);
             }
 
-            var response = await _authService.LoginUserAsync(loginDTO);
-
-            if (response.SignInResult.Succeeded)
+            try
             {
-                return Ok(new { Token = response.Token });
+                var response = await _authService.LoginUserAsync(loginDTO);
+                return Ok(new { Token = response.Token, RefreshToken = response.RefreshToken });
             }
-
-
-            return BadRequest("Invalid login attempt.");
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized("Invalid login attempt.");
+            }
         }
 
+        [HttpPost("refresh")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDTO refreshTokenDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var tokenResponse = await _authService.RefreshTokenAsync(refreshTokenDto.RefreshToken);
+                if (tokenResponse != null)
+                {
+                    return Ok(tokenResponse);
+                }
+                return BadRequest("Invalid refresh token.");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized("Invalid refresh token.");
+            }
+        }
     }
 }
