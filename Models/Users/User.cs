@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace student_testing_system.Data
+namespace student_testing_system.Models.Users
 {
     public class User
     {

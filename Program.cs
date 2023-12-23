@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using student_testing_system.Data;
 using student_testing_system.Models.Users;
 
 class Program
@@ -23,6 +25,12 @@ class Program
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+
+        builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseSqlServer(
+            builder.Configuration.GetConnectionString("DatabaseConnection")
+        )
+    );
         builder.Services.AddScoped<IUserRepository, UserRepository>();
     }
 
