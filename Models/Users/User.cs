@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using student_testing_system.Models.EF;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Principal;
 

@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using System;
+using student_testing_system.Services.Subjects;
 
 class Program
 {
@@ -29,7 +30,7 @@ class Program
 
         ConfigureApp(app);
 
-        InitializeRoles(app.Services).Wait();
+        RoleInitializer.InitializeRoles(app.Services).Wait();
 
         app.Run();
     }
@@ -45,9 +46,11 @@ class Program
             )
         );
 
-        builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+        builder.Services.AddScoped<SubjectRepository>();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IAuthService, AuthService>();
+        builder.Services.AddScoped<ISubjectService, SubjectService>();
         builder.Services.AddIdentity<User, IdentityRole>()
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
@@ -121,21 +124,5 @@ class Program
         app.UseAuthorization();
 
         app.MapControllers();
-    }
-
-    private static async Task InitializeRoles(IServiceProvider serviceProvider)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-        string[] roleNames = { "Admin", "Teacher", "Student" };
-        foreach (var roleName in roleNames)
-        {
-            var roleExists = await roleManager.RoleExistsAsync(roleName);
-            if (!roleExists)
-            {
-                await roleManager.CreateAsync(new IdentityRole(roleName));
-            }
-        }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using student_testing_system.Data;
 
@@ -11,9 +12,11 @@ using student_testing_system.Data;
 namespace student_testing_system.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231223195321_Add-Test-And-Subject-Tables")]
+    partial class AddTestAndSubjectTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -157,9 +160,11 @@ namespace student_testing_system.Migrations
 
             modelBuilder.Entity("student_testing_system.Models.Subjects.Subject", b =>
                 {
-                    b.Property<Guid>("SubjectId")
+                    b.Property<int>("SubjectId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubjectId"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -178,9 +183,11 @@ namespace student_testing_system.Migrations
 
             modelBuilder.Entity("student_testing_system.Models.Tests.Test", b =>
                 {
-                    b.Property<Guid>("TestId")
+                    b.Property<int>("TestId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TestId"));
 
                     b.Property<int>("AllowedAttempts")
                         .HasColumnType("int");
@@ -194,8 +201,8 @@ namespace student_testing_system.Migrations
                     b.Property<int>("QuestionsPerAttempt")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("SubjectId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()

@@ -7,20 +7,18 @@ namespace student_testing_system.Data
 {
     public class RoleInitializer
     {
-        public static async Task InitializeAsync(IServiceProvider serviceProvider)
+        public static async Task InitializeRoles(IServiceProvider serviceProvider)
         {
-            using (var scope = serviceProvider.CreateScope())
-            {
-                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            using var scope = serviceProvider.CreateScope();
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-                string[] roleNames = { RoleNames.Admin, RoleNames.Teacher, RoleNames.Student };
-                foreach (var roleName in roleNames)
+            string[] roleNames = { RoleNames.Admin, RoleNames.Teacher, RoleNames.Student };
+            foreach (var roleName in roleNames)
+            {
+                var roleExists = await roleManager.RoleExistsAsync(roleName);
+                if (!roleExists)
                 {
-                    var roleExists = await roleManager.RoleExistsAsync(roleName);
-                    if (!roleExists)
-                    {
-                        await roleManager.CreateAsync(new IdentityRole(roleName));
-                    }
+                    await roleManager.CreateAsync(new IdentityRole(roleName));
                 }
             }
         }

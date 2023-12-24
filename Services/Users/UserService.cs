@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using student_testing_system.Data;
 using student_testing_system.Models.Users;
 using System;
 using System.Collections.Generic;
@@ -8,10 +9,10 @@ namespace student_testing_system.Services.Users
 {
     public class UserService : IUserService
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IGenericRepository<User> _userRepository;
         private readonly UserManager<User> _userManager; 
 
-        public UserService(IUserRepository userRepository, UserManager<User> userManager)
+        public UserService(IGenericRepository<User> userRepository, UserManager<User> userManager)
         {
             _userRepository = userRepository;
             _userManager = userManager;
@@ -19,7 +20,7 @@ namespace student_testing_system.Services.Users
 
         public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
-            return await _userRepository.GetAllUsersAsync();
+            return await _userRepository.GetAllAsync();
         }
 
         public async Task<UserDTO> GetUserByIdAsync(string id)
