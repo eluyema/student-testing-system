@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace student_testing_system.Controllers
 {
-    [Authorize(Roles = "Student")]
     [ApiController]
     [Route("api/v1/test-session")]
     public class TestSessionController : ControllerBase
@@ -21,7 +20,7 @@ namespace student_testing_system.Controllers
         {
             _testSessionService = testSessionService;
         }
-
+        [Authorize(Roles = "Student")]
         [HttpPost("start")]
         public async Task<IActionResult> StartTestSession([FromBody] StartTestSessionDTO dto)
         {
@@ -45,7 +44,7 @@ namespace student_testing_system.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-
+        [Authorize(Roles = "Student")]
         [HttpGet("{testSessionId}/questions")]
         public async Task<IActionResult> GetAssignedQuestions(Guid testSessionId)
         {
@@ -63,7 +62,7 @@ namespace student_testing_system.Controllers
                 return StatusCode(500, "An error occurred while processing your request.");
             }
         }
-
+        [Authorize(Roles = "Student")]
         [HttpGet("test/{testId}")]
         public async Task<IActionResult> GetMyTestSessionsByTestId(Guid testId)
         {
@@ -82,7 +81,7 @@ namespace student_testing_system.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [Authorize(Roles = "Student")]
         [HttpGet("{testSessionId}")]
         public async Task<IActionResult> GetTestSession(Guid testSessionId)
         {

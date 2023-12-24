@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using student_testing_system.Services.Subjects;
 using student_testing_system.Services.Subjects.DTOs;
 using student_testing_system.Services.Tests;
@@ -17,6 +18,7 @@ namespace student_testing_system.Controllers
             _subjectService = subjectService;
             _testService = testService;
         }
+
 
         [HttpGet]
         public async Task<IActionResult> GetAllSubjects()
@@ -38,14 +40,14 @@ namespace student_testing_system.Controllers
                 return NotFound(e.Message);
             }
         }
-
+        [Authorize(Roles = "Teacher")]
         [HttpPost]
         public async Task<IActionResult> CreateSubject(CreateSubjectDTO createSubjectDto)
         {
             var createdSubject = await _subjectService.CreateSubjectAsync(createSubjectDto);
             return CreatedAtAction(nameof(GetSubject), new { id = createdSubject.SubjectId }, createdSubject);
         }
-
+        [Authorize(Roles = "Teacher")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateSubject(Guid id, UpdateSubjectDTO updateSubjectDto)
         {
@@ -59,7 +61,7 @@ namespace student_testing_system.Controllers
                 return NotFound(e.Message);
             }
         }
-
+        [Authorize(Roles = "Teacher")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSubject(Guid id)
         {
@@ -73,7 +75,7 @@ namespace student_testing_system.Controllers
                 return NotFound(e.Message);
             }
         }
-
+        [Authorize(Roles = "Teacher")]
         [HttpPost("{subjectId}/tests")]
         public async Task<IActionResult> AddTestToSubject(Guid subjectId, [FromBody] CreateInnerTestDTO createTestDto)
         {
@@ -96,7 +98,6 @@ namespace student_testing_system.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
 
         [HttpGet("{subjectId}/tests")]
         public async Task<IActionResult> GetAllSubjectsWithTests(Guid subjectId)

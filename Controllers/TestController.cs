@@ -4,6 +4,7 @@ using student_testing_system.Services.Tests;
 using student_testing_system.Services.Questions;
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace student_testing_system.Controllers
 {
@@ -20,13 +21,6 @@ namespace student_testing_system.Controllers
             _questionService = questionService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateTest([FromBody] CreateTestDTO createTestDto)
-        {
-            var testDto = await _testService.CreateTestAsync(createTestDto);
-            return CreatedAtAction(nameof(GetTest), new { id = testDto.TestId }, testDto);
-        }
-
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTest(Guid id)
         {
@@ -40,7 +34,7 @@ namespace student_testing_system.Controllers
                 return NotFound(ex.Message);
             }
         }
-
+        [Authorize(Roles = "Teacher")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTest(Guid id, [FromBody] UpdateTestDTO updateTestDto)
         {
@@ -54,7 +48,7 @@ namespace student_testing_system.Controllers
                 return NotFound(ex.Message);
             }
         }
-
+        [Authorize(Roles = "Teacher")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTest(Guid id)
         {

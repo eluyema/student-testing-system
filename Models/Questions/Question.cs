@@ -10,6 +10,7 @@ namespace student_testing_system.Models.Questions
         public string Text { get; set; }
         public Guid TestId { get; set; }
         public Test Test { get; set; }
+        public string? FileName { get; set; } = null;
 
         public ICollection<Answer> Answers { get; set; }
     }

@@ -67,7 +67,12 @@ namespace student_testing_system.Services.Tests
 
             return new TestsListDTO
             {
-                Tests = result.Select(t => new TestDTO { TestId = t.TestId, Title = t.Title }).ToList(),
+                Tests = result.Select(t => new TestDTO {
+                    TestId = t.TestId, Title = t.Title,
+                    AllowedAttempts = t.AllowedAttempts,
+                    QuestionsPerAttempt = t.QuestionsPerAttempt,
+                    MinutesDuration = t.MinutesDuration
+                }).ToList(),
             };
         }
 

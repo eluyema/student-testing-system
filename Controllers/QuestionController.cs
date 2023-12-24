@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using student_testing_system.Models.Answers;
 using student_testing_system.Services.Questions;
 using student_testing_system.Services.Questions.DTOs;
@@ -18,7 +19,7 @@ namespace student_testing_system.Controllers
         {
             _questionService = questionService;
         }
-
+        [Authorize(Roles = "Teacher")]
         [HttpPost]
         public async Task<IActionResult> CreateQuestion(Guid testId, [FromBody] CreateQuestionWithAnswersDTO createQuestionDto)
         {
@@ -84,7 +85,7 @@ namespace student_testing_system.Controllers
                 return NotFound($"Question with ID {questionId} not found.");
             }
         }
-
+        [Authorize(Roles = "Teacher")]
         [HttpPut("{questionId}")]
         public async Task<IActionResult> UpdateQuestion(Guid testId, Guid questionId, [FromBody] UpdateQuestionDTO updateQuestionDto)
         {
@@ -98,7 +99,7 @@ namespace student_testing_system.Controllers
                 return NotFound($"Question with ID {questionId} not found.");
             }
         }
-
+        [Authorize(Roles = "Teacher")]
         [HttpDelete("{questionId}")]
         public async Task<IActionResult> DeleteQuestion(Guid testId, Guid questionId)
         {
@@ -112,7 +113,7 @@ namespace student_testing_system.Controllers
                 return NotFound($"Question with ID {questionId} not found.");
             }
         }
-
+        [Authorize(Roles = "Teacher")]
         [HttpPost("{questionId}/answers")]
         public async Task<IActionResult> AddAnswer(Guid testId, Guid questionId, [FromBody] CreateAnswerDTO createAnswerDto)
         {

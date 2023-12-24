@@ -2,6 +2,7 @@
 using student_testing_system.Services.UserAnswers.DTOs;
 using student_testing_system.Services.UserAnswers;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace student_testing_system.Controllers
 {
@@ -15,7 +16,7 @@ namespace student_testing_system.Controllers
         {
             _userAnswerService = userAnswerService;
         }
-
+        [Authorize(Roles = "Student")]
         [HttpPost("add")]
         public async Task<IActionResult> AddUserAnswer([FromBody] CreateUserAnswerDTO dto)
         {
@@ -41,7 +42,7 @@ namespace student_testing_system.Controllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
-
+        [Authorize(Roles = "Student")]
         [HttpGet("{testSessionId}/user-answers")]
         public async Task<IActionResult> GetAllUserAnswersForTestSession(Guid testSessionId)
         {

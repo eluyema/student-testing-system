@@ -1,4 +1,5 @@
-﻿using student_testing_system.Models.Answers;
+﻿using student_testing_system.Blob.Questions;
+using student_testing_system.Models.Answers;
 using student_testing_system.Models.Questions;
 using student_testing_system.Services.Questions.DTOs;
 using System;
@@ -11,10 +12,12 @@ namespace student_testing_system.Services.Questions
     public class QuestionService : IQuestionService
     {
         private readonly IQuestionRepository _questionRepository;
+        private readonly string _fileDirectoryPath;
 
-        public QuestionService(IQuestionRepository questionRepository)
+        public QuestionService(IQuestionRepository questionRepository, string fileDirectoryPath)
         {
             _questionRepository = questionRepository;
+            _fileDirectoryPath = fileDirectoryPath;
         }
 
         public async Task<QuestionsListDTO> GetQuestionsByTestIdAsync(Guid testId)
@@ -25,6 +28,7 @@ namespace student_testing_system.Services.Questions
                 QuestionId = q.QuestionId,
                 Text = q.Text,
                 TestId = q.TestId,
+                FileName = q.FileName,
                 Answers = q.Answers.Select(a => new AnswerDTO
                 {
                     AnswerId = a.AnswerId,
@@ -46,7 +50,7 @@ namespace student_testing_system.Services.Questions
                 QuestionId = question.QuestionId,
                 Text = question.Text,
                 TestId = question.TestId,
-                // Answers are not included in this method
+                FileName = question.FileName,
             };
         }
 
@@ -60,6 +64,7 @@ namespace student_testing_system.Services.Questions
                 QuestionId = question.QuestionId,
                 Text = question.Text,
                 TestId = question.TestId,
+                FileName = question.FileName,
                 Answers = question.Answers.Select(a => new AnswerDTO
                 {
                     AnswerId = a.AnswerId,
@@ -76,10 +81,13 @@ namespace student_testing_system.Services.Questions
                 throw new InvalidOperationException("There must be exactly one correct answer.");
             }
 
+            var filePath = QuestionFileWriter.WriteToFile(dto, _fileDirectoryPath);
+
             var question = new Question
             {
                 Text = dto.Text,
                 TestId = testId,
+                FileName = filePath,
                 Answers = dto.Answers.Select(a => new Answer
                 {
                     Text = a.Text,
@@ -93,6 +101,7 @@ namespace student_testing_system.Services.Questions
                 QuestionId = createdQuestion.QuestionId,
                 Text = createdQuestion.Text,
                 TestId = createdQuestion.TestId,
+                FileName = createdQuestion.FileName,
                 Answers = createdQuestion.Answers.Select(a => new AnswerDTO
                 {
                     AnswerId = a.AnswerId,
@@ -101,6 +110,8 @@ namespace student_testing_system.Services.Questions
                 }).ToList()
             };
         }
+
+
 
         public async Task UpdateQuestionAsync(Guid questionId, UpdateQuestionDTO updateDto)
         {

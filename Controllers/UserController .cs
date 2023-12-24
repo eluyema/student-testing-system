@@ -7,7 +7,6 @@ namespace student_testing_system.Controllers
 {
     [ApiController]
     [Route("api/v1/user")]
-    [Authorize(Roles = "Student")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -16,14 +15,14 @@ namespace student_testing_system.Controllers
         {
             _userService = userService;
         }
-
+        [Authorize(Roles = "Student")]
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _userService.GetAllUsersAsync();
             return Ok(users);
         }
-
+        [Authorize(Roles = "Student")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(string id)
         {
@@ -34,21 +33,21 @@ namespace student_testing_system.Controllers
             }
             return Ok(user);
         }
-
+        [Authorize(Roles = "Student")]
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserDTO createUserDTO)
         {
             var createdUser = await _userService.CreateUserAsync(createUserDTO);
             return CreatedAtAction(nameof(GetUser), new { id = createdUser.Id }, createdUser);
         }
-
+        [Authorize(Roles = "Student")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserDTO updateUserDTO)
         {
             await _userService.UpdateUserAsync(id, updateUserDTO);
             return NoContent();
         }
-
+        [Authorize(Roles = "Student")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {

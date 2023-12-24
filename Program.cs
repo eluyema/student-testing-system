@@ -50,7 +50,7 @@ class Program
                 builder.Configuration.GetConnectionString("DatabaseConnection")
             )
         );
-
+        string questionFilesPath = builder.Configuration["QuestionFiles:DirectoryPath"];
         builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
         builder.Services.AddScoped<SubjectRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -65,8 +65,12 @@ class Program
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<ISubjectService, SubjectService>();
         builder.Services.AddScoped<ITestService, TestService>();
-        builder.Services.AddScoped<IQuestionService, QuestionService>();
-            builder.Services.AddScoped<ITestSessionService, TestSessionService>();
+        builder.Services.AddScoped<IQuestionService>(provider =>
+            new QuestionService(
+                provider.GetRequiredService<IQuestionRepository>(),
+                questionFilesPath
+            ));
+        builder.Services.AddScoped<ITestSessionService, TestSessionService>();
         builder.Services.AddIdentity<User, IdentityRole>()
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
