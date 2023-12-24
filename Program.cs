@@ -17,6 +17,9 @@ using System;
 using student_testing_system.Services.Subjects;
 using student_testing_system.Services.Questions;
 using student_testing_system.Services.Tests;
+using student_testing_system.Services.TestSessions;
+using student_testing_system.Services.Answers;
+using student_testing_system.Services.UserAnswers;
 
 class Program
 {
@@ -50,14 +53,20 @@ class Program
 
         builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
         builder.Services.AddScoped<SubjectRepository>();
+        builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<IAnswerRepository, AnswerRepository>();
+        builder.Services.AddScoped<IUserAnswerRepository, UserAnswerRepository>();
+        builder.Services.AddScoped<ITestSessionRepository, TestSessionRepository>();
         builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
         builder.Services.AddScoped<ITestRepository, TestRepository>();
         builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
         builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IUserAnswerService, UserAnswerService>();
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<ISubjectService, SubjectService>();
         builder.Services.AddScoped<ITestService, TestService>();
         builder.Services.AddScoped<IQuestionService, QuestionService>();
+            builder.Services.AddScoped<ITestSessionService, TestSessionService>();
         builder.Services.AddIdentity<User, IdentityRole>()
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();

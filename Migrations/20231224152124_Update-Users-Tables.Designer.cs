@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using student_testing_system.Data;
 
@@ -11,9 +12,11 @@ using student_testing_system.Data;
 namespace student_testing_system.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231224152124_Update-Users-Tables")]
+    partial class UpdateUsersTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -323,9 +326,6 @@ namespace student_testing_system.Migrations
                     b.Property<Guid>("AnswerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("AssignedQuestionId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -341,9 +341,6 @@ namespace student_testing_system.Migrations
                     b.HasKey("UserAnswerId");
 
                     b.HasIndex("AnswerId");
-
-                    b.HasIndex("AssignedQuestionId")
-                        .IsUnique();
 
                     b.HasIndex("TestSessionId");
 
@@ -556,12 +553,6 @@ namespace student_testing_system.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("student_testing_system.Models.AssignedQuestion", "AssignedQuestion")
-                        .WithOne("UserAnswer")
-                        .HasForeignKey("student_testing_system.Models.UserAnswer", "AssignedQuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("student_testing_system.Models.TestSession", "TestSession")
                         .WithMany()
                         .HasForeignKey("TestSessionId")
@@ -570,15 +561,7 @@ namespace student_testing_system.Migrations
 
                     b.Navigation("Answer");
 
-                    b.Navigation("AssignedQuestion");
-
                     b.Navigation("TestSession");
-                });
-
-            modelBuilder.Entity("student_testing_system.Models.AssignedQuestion", b =>
-                {
-                    b.Navigation("UserAnswer")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("student_testing_system.Models.Questions.Question", b =>

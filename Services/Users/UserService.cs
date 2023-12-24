@@ -9,10 +9,10 @@ namespace student_testing_system.Services.Users
 {
     public class UserService : IUserService
     {
-        private readonly IGenericRepository<User> _userRepository;
+        private readonly IUserRepository _userRepository;
         private readonly UserManager<User> _userManager; 
 
-        public UserService(IGenericRepository<User> userRepository, UserManager<User> userManager)
+        public UserService(IUserRepository userRepository, UserManager<User> userManager)
         {
             _userRepository = userRepository;
             _userManager = userManager;

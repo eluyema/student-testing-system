@@ -13,5 +13,6 @@ namespace student_testing_system.Models.Tests
         public int AllowedAttempts { get; set; }
         public int MinutesDuration { get; set; }
         public int QuestionsPerAttempt { get; set; }
+        public ICollection<TestSession> TestSessions { get; set; }
     }
 }

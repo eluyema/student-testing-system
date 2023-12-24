@@ -2,6 +2,7 @@
 using student_testing_system.Data;
 using student_testing_system.Models.Answers;
 using student_testing_system.Models.Questions;
+using student_testing_system.Models.Users;
 using student_testing_system.Services.Questions.DTOs;
 using System;
 using System.Collections.Generic;
@@ -74,5 +75,26 @@ namespace student_testing_system.Services.Questions
             _context.Answers.Add(answer);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<int> CountQuestionsByTestIdAsync(Guid testId) {
+            return await _context.Questions.CountAsync(q => q.TestId == testId);
+        }
+
+        public async Task<List<Question>> GetRandomQuestionsByTestIdAsync(Guid testId, int numberOfQuestions)
+        {
+            return await _context.Questions
+                .Where(q => q.TestId == testId)
+                .Include(q => q.Answers)
+                .OrderBy(q => Guid.NewGuid())
+                .Take(numberOfQuestions)
+                .ToListAsync();
+        }
+
+        public async Task<bool> ExistsInTestSession(Guid assignedQuestionId, Guid testSessionId)
+        {
+            return await _context.AssignedQuestions
+                .AnyAsync(aq => aq.AssignedQuestionId == assignedQuestionId && aq.TestSessionId == testSessionId);
+        }
+
     }
 }

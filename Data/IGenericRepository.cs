@@ -7,6 +7,7 @@ namespace student_testing_system.Data
         Task<IEnumerable<T>> GetAllAsync();
         Task<T> GetByIdAsync(object id);
         Task<T> CreateAsync(T entity);
+        Task<bool> ExistsAsync(object id);
         Task UpdateAsync(T entity);
         Task DeleteAsync(object id);
     }
