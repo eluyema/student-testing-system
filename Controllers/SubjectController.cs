@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using student_testing_system.Services.Subjects;
 using student_testing_system.Services.Subjects.DTOs;
+using student_testing_system.Services.Tests;
 
 namespace student_testing_system.Controllers
 {
@@ -9,10 +10,12 @@ namespace student_testing_system.Controllers
     public class SubjectController : ControllerBase
     {
         private readonly ISubjectService _subjectService;
+        private readonly ITestService _testService;
 
-        public SubjectController(ISubjectService subjectService)
+        public SubjectController(ISubjectService subjectService, ITestService testService)
         {
             _subjectService = subjectService;
+            _testService = testService;
         }
 
         [HttpGet]
@@ -72,7 +75,7 @@ namespace student_testing_system.Controllers
         }
 
         [HttpPost("{subjectId}/tests")]
-        public async Task<IActionResult> AddTestToSubject(Guid subjectId, [FromBody] CreateTestDTO createTestDto)
+        public async Task<IActionResult> AddTestToSubject(Guid subjectId, [FromBody] CreateInnerTestDTO createTestDto)
         {
             if (!ModelState.IsValid)
             {
@@ -95,10 +98,10 @@ namespace student_testing_system.Controllers
         }
 
 
-        [HttpGet("with-tests")]
-        public async Task<IActionResult> GetAllSubjectsWithTests()
+        [HttpGet("{subjectId}/tests")]
+        public async Task<IActionResult> GetAllSubjectsWithTests(Guid subjectId)
         {
-            var subjectsWithTests = await _subjectService.GetAllSubjectsWithTestsAsync();
+            var subjectsWithTests = await _testService.GetAllTestsBySubjectIdAsync(subjectId);
             return Ok(subjectsWithTests);
         }
     }

@@ -7,7 +7,6 @@ namespace student_testing_system.Services.Subjects
     public interface ISubjectRepository : IGenericRepository<Subject>
     {
         Task AddTestToSubjectAsync(Guid subjectId, Test test);
-        Task<IEnumerable<Subject>> GetAllSubjectsWithTestsAsync();
     }
 
 }

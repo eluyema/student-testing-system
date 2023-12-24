@@ -15,6 +15,8 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using System;
 using student_testing_system.Services.Subjects;
+using student_testing_system.Services.Questions;
+using student_testing_system.Services.Tests;
 
 class Program
 {
@@ -48,9 +50,14 @@ class Program
 
         builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
         builder.Services.AddScoped<SubjectRepository>();
+        builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+        builder.Services.AddScoped<ITestRepository, TestRepository>();
+        builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<ISubjectService, SubjectService>();
+        builder.Services.AddScoped<ITestService, TestService>();
+        builder.Services.AddScoped<IQuestionService, QuestionService>();
         builder.Services.AddIdentity<User, IdentityRole>()
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();

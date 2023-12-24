@@ -11,8 +11,7 @@ namespace student_testing_system.Services.Subjects
         Task<SubjectDTO> CreateSubjectAsync(CreateSubjectDTO createSubjectDto);
         Task UpdateSubjectAsync(Guid id, UpdateSubjectDTO updateSubjectDto);
         Task DeleteSubjectAsync(Guid id);
-        Task AddTestToSubjectAsync(Guid subjectId, CreateTestDTO testDto);
-        Task<IEnumerable<SubjectWithTestsDTO>> GetAllSubjectsWithTestsAsync();
+        Task AddTestToSubjectAsync(Guid subjectId, CreateInnerTestDTO testDto);
     }
 
 }

@@ -27,13 +27,6 @@ namespace student_testing_system.Services.Subjects
             subject.Tests.Add(test);
             await _context.SaveChangesAsync();
         }
-
-        public async Task<IEnumerable<Subject>> GetAllSubjectsWithTestsAsync()
-        {
-            return await _context.Subjects
-                                 .Include(s => s.Tests)
-                                 .ToListAsync();
-        }
     }
 
 }

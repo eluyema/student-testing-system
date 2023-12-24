@@ -13,6 +13,7 @@ namespace student_testing_system.Data
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
             string[] roleNames = { RoleNames.Admin, RoleNames.Teacher, RoleNames.Student };
+
             foreach (var roleName in roleNames)
             {
                 var roleExists = await roleManager.RoleExistsAsync(roleName);

@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using student_testing_system.Models.Answers;
 using student_testing_system.Models.EF;
+using student_testing_system.Models.Questions;
 using student_testing_system.Models.Subjects;
 using student_testing_system.Models.Tests;
 using student_testing_system.Models.Users;
@@ -24,6 +26,9 @@ namespace student_testing_system.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<Test> Tests { get; set; }
+        public DbSet<Question> Questions { get; set; }
+        public DbSet<Answer> Answers { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,14 +1,15 @@
 ﻿using student_testing_system.Models.Subjects;
 using student_testing_system.Models.Tests;
 using student_testing_system.Services.Subjects.DTOs;
+using student_testing_system.Services.Tests;
 
 namespace student_testing_system.Services.Subjects
 {
     public class SubjectService : ISubjectService
     {
-        private readonly SubjectRepository _subjectRepository;
+        private readonly ISubjectRepository _subjectRepository;
 
-        public SubjectService(SubjectRepository subjectRepository)
+        public SubjectService(ISubjectRepository subjectRepository)
         {
             _subjectRepository = subjectRepository;
         }
@@ -58,7 +59,7 @@ namespace student_testing_system.Services.Subjects
             await _subjectRepository.DeleteAsync(id);
         }
 
-        public async Task AddTestToSubjectAsync(Guid subjectId, CreateTestDTO createTestDto)
+        public async Task AddTestToSubjectAsync(Guid subjectId, CreateInnerTestDTO createTestDto)
         {
             var subject = await _subjectRepository.GetByIdAsync(subjectId);
             if (subject == null)
@@ -68,33 +69,13 @@ namespace student_testing_system.Services.Subjects
             var test = new Test
             {
                 Title = createTestDto.Title,
+                SubjectId = subjectId,
                 AllowedAttempts = createTestDto.AllowedAttempts,
                 MinutesDuration = createTestDto.MinutesDuration,
                 QuestionsPerAttempt = createTestDto.QuestionsPerAttempt
             };
 
             await _subjectRepository.AddTestToSubjectAsync(subjectId, test);
-        }
-
-
-
-        public async Task<IEnumerable<SubjectWithTestsDTO>> GetAllSubjectsWithTestsAsync()
-        {
-            var subjects = await _subjectRepository.GetAllSubjectsWithTestsAsync();
-
-            return subjects.Select(s => new SubjectWithTestsDTO
-            {
-                SubjectId = s.SubjectId,
-                Name = s.Name,
-                Tests = s.Tests.Select(t => new TestDTO
-                {
-                    TestId = t.TestId,
-                    Title = t.Title,
-                    AllowedAttempts = t.AllowedAttempts,
-                    MinutesDuration = t.MinutesDuration,
-                    QuestionsPerAttempt = t.QuestionsPerAttempt
-                }).ToList()
-            });
         }
     }
 
